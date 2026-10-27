@@ -1,0 +1,183 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("SUPER_ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSettings {
+  id                 String   @id @default("default")
+  companyName        String   @default("Mustansir Enterprises")
+  tagline            String   @default("Authorized Industrial Stockist & Engineering Equipment Distributor Since 1987")
+  establishedYear    String   @default("1987")
+  directorName       String   @default("Saifuddin H. Khasamwala")
+  aboutShort         String   @default("Mustansir Enterprises is a verified industrial wholesaler, supplier, and trader established in 1987 in Secunderabad, Telangana. Managed by Director Saifuddin H. Khasamwala, we specialize in industrial valves, water meters, steam traps, and water works equipment.")
+  aboutFull          String   @default("Established in 1987 in the industrial heart of Secunderabad, Telangana, Mustansir Enterprises has built a nearly four-decade legacy as a trusted stockist, authorized distributor, and technical supplier of precision flow-control equipment. Under the leadership of Director Saifuddin H. Khasamwala, we supply mission-critical industrial valves, domestic and bulk water metering systems, and high-efficiency steam engineering controls to municipal water boards, pharmaceutical plants, process industries, power stations, and infrastructure contractors across India.")
+  gstNumber          String   @default("36AABFM1987M1Z5")
+  businessType       String   @default("Wholesaler, Authorized Stockist, Distributor & Trader")
+
+  // Site-wide Contact, Email & WhatsApp Settings
+  adminEmail         String   @default("sales@mustansirenterprises.com")
+  publicEmail        String   @default("info@mustansirenterprises.com")
+  whatsappNumber     String   @default("919849012345")
+  phonePrimary       String   @default("+91 40 2771 4582")
+  phoneSecondary     String   @default("+91 98490 12345")
+  addressLine1       String   @default("5-2-200/A, Ranigunj, MG Road Industrial Corridor")
+  addressLine2       String   @default("Opposite Secundrabad Engineering Market, Near James Street")
+  city               String   @default("Secunderabad")
+  state              String   @default("Telangana")
+  pincode            String   @default("500003")
+  country            String   @default("India")
+  workingHours       String   @default("Monday – Saturday: 9:30 AM – 7:30 PM IST")
+
+  // Maps & Multi-Location Configuration (Admin Controllable)
+  mapEmbedUrl        String   @default("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15225.714521807587!2d78.4832145!3d17.4325214!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b78392bafbc2!2sRanigunj%2C%20Secunderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin")
+  mapLinkUrl         String   @default("https://maps.google.com/?q=Ranigunj,Secunderabad,Telangana,500003")
+  latitude           String   @default("17.4325")
+  longitude          String   @default("78.4898")
+  locationsJson      String   @default("[]")
+
+  // Hero & Honeycomb Site Content (Admin Controllable)
+  heroBadge          String   @default("ESTABLISHED 1987 • SECUNDERABAD, TELANGANA")
+  heroTitle          String   @default("Precision Flow Control, Industrial Valves & Metering Systems")
+  heroSubtitle       String   @default("Prominent stockist and authorized agent for top-tier industrial manufacturing brands including Audco, Spirax, Itron, Actaris, Pennant, Kartar, Normex & Racer.")
+  statsJson          String   @default("[]")
+  whatsappDefaultMsg String   @default("Hello Mustansir Enterprises, I would like to enquire about your industrial products.")
+
+  // Gmail SMTP Configuration (Admin Controllable + .env Fallback)
+  smtpHost           String   @default("smtp.gmail.com")
+  smtpPort           Int      @default(465)
+  smtpUser           String   @default("")
+  smtpPass           String   @default("")
+  smtpFromName       String   @default("Mustansir Enterprises Inquiry Desk")
+
+  // Cloudflare R2 Storage Configuration (Admin Controllable + .env Fallback)
+  r2AccountId        String   @default("")
+  r2AccessKeyId      String   @default("")
+  r2SecretAccessKey  String   @default("")
+  r2BucketName       String   @default("")
+  r2PublicUrl        String   @default("")
+
+  updatedAt          DateTime @updatedAt
+}
+
+model Category {
+  id               String     @id @default(cuid())
+  name             String
+  slug             String     @unique
+  code             String     @default("CAT-01")
+  shortDescription String
+  description      String
+  image            String
+  iconName         String     @default("Gauge")
+  accentColor      String     @default("#0284c7")
+  specsSummary     String     @default("DIN / BS / IS / API Standards")
+  applicationsJson String     @default("[]")
+  featured         Boolean    @default(true)
+  sortOrder        Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  products         Product[]
+  resources        Resource[]
+}
+
+model Brand {
+  id               String     @id @default(cuid())
+  name             String
+  slug             String     @unique
+  logo             String
+  country          String     @default("India / Global")
+  specialization   String
+  description      String
+  authorizedStatus String     @default("Authorized Stockist & Distributor")
+  websiteUrl       String     @default("")
+  featured         Boolean    @default(true)
+  sortOrder        Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  products         Product[]
+  resources        Resource[]
+}
+
+model Product {
+  id                 String    @id @default(cuid())
+  name               String
+  slug               String    @unique
+  sku                String
+  shortDescription   String
+  description        String
+  image              String
+  galleryJson        String    @default("[]")
+  specificationsJson String    @default("[]")
+  featuresJson       String    @default("[]")
+  applicationsJson   String    @default("[]")
+  sizeRange          String    @default("15mm to 600mm (1/2\" to 24\")")
+  pressureRating     String    @default("PN10 / PN16 / Class 150 / Class 300")
+  bodyMaterial       String    @default("Cast Iron / Cast Steel / SS 304 / SS 316 / Forged Brass")
+  endConnection      String    @default("Flanged / Wafer / Screwed / Socket Weld")
+  priceLabel         String    @default("Wholesale Quote on Request")
+  inStock            Boolean   @default(true)
+  featured           Boolean   @default(true)
+  datasheetUrl       String    @default("")
+  categoryId         String
+  brandId            String
+  category           Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  brand              Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  inquiries          Inquiry[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model Resource {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  type          String    @default("Technical Catalog")
+  description   String
+  fileUrl       String
+  fileSize      String    @default("2.4 MB PDF")
+  standardCode  String    @default("ISO / IS / BS Standard")
+  featured      Boolean   @default(true)
+  downloadCount Int       @default(0)
+  categoryId    String?
+  brandId       String?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brand         Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Inquiry {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String
+  company      String   @default("")
+  subject      String
+  message      String
+  quantity     String   @default("Standard Inquiry")
+  productId    String?
+  productName  String   @default("")
+  productSku   String   @default("")
+  brandName    String   @default("")
+  categoryName String   @default("")
+  source       String   @default("PRODUCT_EMAIL_MODAL")
+  status       String   @default("NEW")
+  emailSent    Boolean  @default(false)
+  emailError   String   @default("")
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+}
